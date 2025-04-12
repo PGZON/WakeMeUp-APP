@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { MapPin, Navigation } from 'lucide-react-native';
-import { colors } from '@/constants/colors';
-import { dimensions } from '@/constants/dimensions';
+import { colors } from '../constants/colors';
+import { dimensions } from '../constants/dimensions';
 
 interface MapViewProps {
   currentLocation: { latitude: number; longitude: number } | null;

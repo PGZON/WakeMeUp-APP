@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Location, Trip, AlarmSettings, TravelMode } from '@/types/location';
+import { Location, Trip, AlarmSettings, TravelMode } from '../types/location';
 
 interface LocationState {
   currentLocation: { latitude: number; longitude: number } | null;
