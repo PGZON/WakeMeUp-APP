@@ -1,74 +1,243 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
+import { useLocationStore } from '@/hooks/useLocationStore';
+import { useLocationTracking } from '@/hooks/useLocationTracking';
+import { useAlarm } from '@/hooks/useAlarm';
+import { LocationSearchBar } from '@/components/LocationSearchBar';
+import { MapView } from '@/components/MapView';
+import { AlarmSettingsCard } from '@/components/AlarmSettingsCard';
+import { ActiveTripCard } from '@/components/ActiveTripCard';
+import { AlarmModal } from '@/components/AlarmModal';
+import { Location, TravelMode } from '@/types/location';
+import { colors } from '@/constants/colors';
+import { dimensions } from '@/constants/dimensions';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+  
+  const { 
+    savedLocations, 
+    activeTrip, 
+    alarmSettings, 
+    updateAlarmSettings,
+    startTrip,
+    endTrip,
+    isAlarmActive,
+    setAlarmActive
+  } = useLocationStore();
+  
+  const { 
+    currentLocation, 
+    errorMsg, 
+    startTracking, 
+    stopTracking,
+    isTracking
+  } = useLocationTracking();
+  
+  const { 
+    isAlarmActive: alarmTriggered,
+    snoozeAlarm,
+    stopAlarm,
+    completeTrip
+  } = useAlarm();
+  
+  // Calculate distance to destination
+  useEffect(() => {
+    if (currentLocation && activeTrip) {
+      const { latitude: lat1, longitude: lon1 } = currentLocation;
+      const { latitude: lat2, longitude: lon2 } = activeTrip.destination;
+      
+      // Calculate distance using Haversine formula
+      const R = 6371e3; // Earth's radius in meters
+      const φ1 = (lat1 * Math.PI) / 180;
+      const φ2 = (lat2 * Math.PI) / 180;
+      const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+      const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+      const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+
+      setDistance(distance);
+    }
+  }, [currentLocation, activeTrip]);
+  
+  // Show alarm modal when alarm is triggered
+  useEffect(() => {
+    if (alarmTriggered && activeTrip) {
+      setShowAlarmModal(true);
+    }
+  }, [alarmTriggered, activeTrip]);
+  
+  // Start tracking when a trip is active
+  useEffect(() => {
+    if (activeTrip && !isTracking) {
+      startTracking();
+    } else if (!activeTrip && isTracking) {
+      stopTracking();
+    }
+    
+    return () => {
+      if (isTracking) {
+        stopTracking();
+      }
+    };
+  }, [activeTrip, isTracking]);
+  
+  // Handle location selection
+  const handleSelectLocation = (location: Location) => {
+    setSelectedLocation(location);
+  };
+  
+  // Handle starting a trip
+  const handleStartTrip = (travelMode: TravelMode) => {
+    if (selectedLocation) {
+      startTrip(
+        selectedLocation,
+        alarmSettings.distance,
+        alarmSettings.sound && alarmSettings.vibration ? 'both' : alarmSettings.sound ? 'sound' : 'vibration',
+        travelMode
+      );
+    }
+  };
+  
+  // Handle completing a trip
+  const handleCompleteTrip = () => {
+    completeTrip();
+    setSelectedLocation(null);
+  };
+  
+  // Handle snoozing the alarm
+  const handleSnoozeAlarm = () => {
+    snoozeAlarm();
+    setShowAlarmModal(false);
+  };
+  
+  // Handle stopping the alarm
+  const handleStopAlarm = () => {
+    stopAlarm();
+    setShowAlarmModal(false);
+  };
+  
+  // Render the main content based on app state
+  const renderMainContent = () => {
+    if (activeTrip) {
+      return (
+        <ActiveTripCard
+          trip={activeTrip}
+          distance={distance}
+          isAlarmActive={isAlarmActive}
+          onToggleAlarm={() => setAlarmActive(!isAlarmActive)}
+          onCompleteTrip={handleCompleteTrip}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      );
+    } 
+    
+    if (selectedLocation) {
+      return (
+        <AlarmSettingsCard
+          settings={alarmSettings}
+          onUpdateSettings={updateAlarmSettings}
+          onStartTrip={handleStartTrip}
+        />
+      );
+    }
+    
+    return (
+      <View style={styles.instructionsContainer}>
+        <Text style={styles.instructionsTitle}>How to use WakeMeUp</Text>
+        <Text style={styles.instructionsText}>
+          1. Search for your destination above
+        </Text>
+        <Text style={styles.instructionsText}>
+          2. Set your alarm preferences
+        </Text>
+        <Text style={styles.instructionsText}>
+          3. Start your trip and relax
+        </Text>
+        <Text style={styles.instructionsText}>
+          4. We'll wake you up when you're close!
+        </Text>
+      </View>
+    );
+  };
+  
+  return (
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <Stack.Screen options={{ title: "WakeMeUp" }} />
+      
+      <View style={styles.contentContainer}>
+        <LocationSearchBar
+          onSelectLocation={handleSelectLocation}
+          savedLocations={savedLocations}
+        />
+        
+        <MapView
+          currentLocation={currentLocation}
+          destination={activeTrip ? activeTrip.destination : selectedLocation}
+        />
+        
+        {errorMsg && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errorMsg}</Text>
+          </View>
+        )}
+        
+        {renderMainContent()}
+      </View>
+      
+      <AlarmModal
+        visible={showAlarmModal}
+        destination={activeTrip?.destination.name || ""}
+        onSnooze={handleSnoozeAlarm}
+        onStop={handleStopAlarm}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: colors.backgroundDark,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingBottom: dimensions.spacing.xl,
+  },
+  errorContainer: {
+    backgroundColor: colors.error,
+    padding: dimensions.spacing.md,
+    margin: dimensions.spacing.md,
+    borderRadius: dimensions.borderRadius.md,
+  },
+  errorText: {
+    color: colors.card,
+    textAlign: 'center',
+  },
+  instructionsContainer: {
+    backgroundColor: colors.card,
+    borderRadius: dimensions.borderRadius.lg,
+    padding: dimensions.spacing.xl,
+    margin: dimensions.spacing.md,
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  instructionsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: dimensions.spacing.lg,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  instructionsText: {
+    fontSize: 16,
+    color: colors.textLight,
+    marginBottom: dimensions.spacing.md,
+    textAlign: 'center',
   },
 });
