@@ -199,4 +199,4 @@ const styles = StyleSheet.create({
     color: colors.card,
     marginLeft: dimensions.spacing.sm,
   },
-});
+});//completed 
