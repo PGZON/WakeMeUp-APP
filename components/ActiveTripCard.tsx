@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Navigation, Bell, BellOff, Check } from 'lucide-react-native';
-import { colors } from '@/constants/colors';
+import { colors } from '@/constants/Colors';
 import { dimensions } from '@/constants/dimensions';
 import { Trip } from '@/types/location';
 

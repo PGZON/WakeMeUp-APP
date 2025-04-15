@@ -5,7 +5,7 @@ import { Stack, useRouter } from 'expo-router';
 import { TripHistoryList } from '../../components/TripHistoryList';
 import { useLocationStore } from '../../hooks/useLocationStore';
 import { Trip } from '../../types/location';
-import { colors } from '../../constants/colors';
+import { colors } from '../../constants/Colors';
 
 export default function HistoryScreen() {
   const router = useRouter();

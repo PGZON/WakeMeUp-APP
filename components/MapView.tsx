@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { MapPin, Navigation } from 'lucide-react-native';
-import { colors } from '../constants/colors';
+import { colors } from '../constants/Colors';
 import { dimensions } from '../constants/dimensions';
 
 interface MapViewProps {

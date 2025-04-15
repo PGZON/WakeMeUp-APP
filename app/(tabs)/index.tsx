@@ -11,7 +11,7 @@ import { AlarmSettingsCard } from '../../components/AlarmSettingsCard';
 import { ActiveTripCard } from '../../components/ActiveTripCard';
 import { AlarmModal } from '../../components/AlarmModal';
 import { Location, TravelMode } from '../../types/location';
-import { colors } from '../../constants/colors';
+import { colors } from '../../constants/Colors';
 import { dimensions } from '../../constants/dimensions';
 
 export default function HomeScreen() {
