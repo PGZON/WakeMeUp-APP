@@ -2,10 +2,10 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
-import { TripHistoryList } from '../../components/TripHistoryList';
-import { useLocationStore } from '../../hooks/useLocationStore';
-import { Trip } from '../../types/location';
-import { colors } from '../../constants/Colors';
+import { useLocationStore } from '@/hooks/useLocationStore';
+import { TripHistoryList } from '@/components/TripHistoryList';
+import { Trip } from '@/types/location';
+import { colors } from '@/constants/colors';
 
 export default function HistoryScreen() {
   const router = useRouter();

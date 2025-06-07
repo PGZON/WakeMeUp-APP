@@ -11,13 +11,12 @@ interface State {
   error: Error | null;
 }
 
-const IFRAME_ID = 'rork-web-preview';
+const IFRAME_ID = 'web-preview';
 
-const webTargetOrigins = [
-  "http://localhost:3000",
-//   "https://rorkai.com",
-//   "https://rork.app",
-];    
+const ALLOWED_ORIGINS = [
+  "http://localhost:8081",
+  "http://localhost:3000"
+];
 
 function sendErrorToIframeParent(error: any, errorInfo?: any) {
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
@@ -41,7 +40,7 @@ function sendErrorToIframeParent(error: any, errorInfo?: any) {
     try {
       window.parent.postMessage(
         errorMessage,
-        webTargetOrigins.includes(document.referrer) ? document.referrer : '*'
+        ALLOWED_ORIGINS.includes(document.referrer) ? document.referrer : '*'
       );
     } catch (postMessageError) {
       console.error('Failed to send error to parent:', postMessageError);

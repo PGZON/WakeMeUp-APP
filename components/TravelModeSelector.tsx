@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Train, Bus, Car, PersonStanding } from 'lucide-react-native';
-import { colors } from '@/constants/Colors';
+import { colors } from '@/constants/colors';
 import { dimensions } from '@/constants/dimensions';
 import { TravelMode } from '@/types/location';
 

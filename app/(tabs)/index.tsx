@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
-import { useLocationStore } from '../../hooks/useLocationStore';
-import { useLocationTracking } from '../../hooks/useLocationTracking';
-import { useAlarm } from '../../hooks/useAlarm';
-import { LocationSearchBar } from '../../components/LocationSearchBar';
-import { MapView } from '../../components/MapView';
-import { AlarmSettingsCard } from '../../components/AlarmSettingsCard';
-import { ActiveTripCard } from '../../components/ActiveTripCard';
-import { AlarmModal } from '../../components/AlarmModal';
-import { Location, TravelMode } from '../../types/location';
-import { colors } from '../../constants/Colors';
-import { dimensions } from '../../constants/dimensions';
+import { useLocationStore } from '@/hooks/useLocationStore';
+import { useLocationTracking } from '@/hooks/useLocationTracking';
+import { useAlarm } from '@/hooks/useAlarm';
+import { LocationSearchBar } from '@/components/LocationSearchBar';
+import { MapView } from '@/components/MapView';
+import { AlarmSettingsCard } from '@/components/AlarmSettingsCard';
+import { ActiveTripCard } from '@/components/ActiveTripCard';
+import { AlarmModal } from '@/components/AlarmModal';
+import { Location, TravelMode } from '@/types/location';
+import { colors } from '@/constants/colors';
+import { dimensions } from '@/constants/dimensions';
 
 export default function HomeScreen() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);

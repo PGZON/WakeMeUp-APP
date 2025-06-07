@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Platform } from 'react-native';
 import { Bell, Vibrate, Volume2, MapPin, Clock } from 'lucide-react-native';
-import { colors } from '@/constants/Colors';
+import { colors } from '@/constants/colors';
 import { dimensions } from '@/constants/dimensions';
 import { AlarmSettings, TravelMode } from '@/types/location';
 import { TravelModeSelector } from './TravelModeSelector';

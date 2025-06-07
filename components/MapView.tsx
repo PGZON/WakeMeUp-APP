@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { MapPin, Navigation } from 'lucide-react-native';
-import { colors } from '../constants/Colors';
-import { dimensions } from '../constants/dimensions';
+import { useTheme } from '@/context/ThemeContext';
+import WebView from 'react-native-webview';
 
 interface MapViewProps {
   currentLocation: { latitude: number; longitude: number } | null;
@@ -10,88 +10,116 @@ interface MapViewProps {
 }
 
 export const MapView: React.FC<MapViewProps> = ({ currentLocation, destination }) => {
-  // In a real app, this would be a real map component
-  // For this example, we'll just show a placeholder
-  
+  const { theme } = useTheme();
+  const [loading, setLoading] = useState(true);
+
+  // Generate Google Maps URL
+  const getGoogleMapsUrl = () => {
+    let url = 'https://www.google.com/maps/embed/v1/view?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'; // This is a placeholder key, you should use your own
+    
+    if (destination) {
+      url = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=${destination.latitude},${destination.longitude}`;
+    } else if (currentLocation) {
+      url = `https://www.google.com/maps/embed/v1/view?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&center=${currentLocation.latitude},${currentLocation.longitude}&zoom=15`;
+    }
+    
+    return url;
+  };
+
+  // Generate directions URL if both locations are available
+  const getDirectionsUrl = () => {
+    if (currentLocation && destination) {
+      return `https://www.google.com/maps/embed/v1/directions?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&origin=${currentLocation.latitude},${currentLocation.longitude}&destination=${destination.latitude},${destination.longitude}&mode=driving`;
+    }
+    return null;
+  };
+
+  const directionsUrl = getDirectionsUrl();
+  const mapUrl = directionsUrl || getGoogleMapsUrl();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      overflow: 'hidden',
+      borderRadius: 12,
+    },
+    mapContainer: {
+      flex: 1,
+    },
+    webView: {
+      flex: 1,
+    },
+    mapPlaceholder: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundSecondary || theme.colors.card,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 16,
+    },
+    mapPlaceholderText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.colors.textSecondary,
+      marginBottom: 16,
+    },
+    locationInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.card,
+      padding: 12,
+      borderRadius: 12,
+      marginVertical: 8,
+      width: '100%',
+    },
+    locationText: {
+      marginLeft: 8,
+      color: theme.colors.text,
+      fontSize: 14,
+    },
+    loadingContainer: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.3)',
+    },
+  });
+
+  // For web, we'll use a different approach
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.container}>
+        <iframe
+          src={mapUrl}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {Platform.OS === 'web' ? (
-        <View style={styles.mapPlaceholder}>
-          <Text style={styles.mapPlaceholderText}>Map View</Text>
-          {currentLocation && (
-            <View style={styles.locationInfo}>
-              <MapPin size={dimensions.icon.md} color={colors.primary} />
-              <Text style={styles.locationText}>
-                Your location: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
-              </Text>
-            </View>
-          )}
-          {destination && (
-            <View style={styles.locationInfo}>
-              <Navigation size={dimensions.icon.md} color={colors.secondary} />
-              <Text style={styles.locationText}>
-                Destination: {destination.name} ({destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)})
-              </Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        <View style={styles.mapPlaceholder}>
-          <Text style={styles.mapPlaceholderText}>Map View</Text>
-          {currentLocation && (
-            <View style={styles.locationInfo}>
-              <MapPin size={dimensions.icon.md} color={colors.primary} />
-              <Text style={styles.locationText}>
-                Your location: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
-              </Text>
-            </View>
-          )}
-          {destination && (
-            <View style={styles.locationInfo}>
-              <Navigation size={dimensions.icon.md} color={colors.secondary} />
-              <Text style={styles.locationText}>
-                Destination: {destination.name} ({destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)})
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
+      <View style={styles.mapContainer}>
+        <WebView
+          source={{ uri: mapUrl }}
+          style={styles.webView}
+          onLoadStart={() => setLoading(true)}
+          onLoadEnd={() => setLoading(false)}
+        />
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          </View>
+        )}
+      </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    overflow: 'hidden',
-    borderRadius: dimensions.borderRadius.md,
-    margin: dimensions.spacing.md,
-  },
-  mapPlaceholder: {
-    flex: 1,
-    backgroundColor: colors.backgroundDark,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: dimensions.spacing.lg,
-  },
-  mapPlaceholderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.textMuted,
-    marginBottom: dimensions.spacing.lg,
-  },
-  locationInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    padding: dimensions.spacing.md,
-    borderRadius: dimensions.borderRadius.md,
-    marginVertical: dimensions.spacing.sm,
-    width: '100%',
-  },
-  locationText: {
-    marginLeft: dimensions.spacing.sm,
-    color: colors.text,
-    fontSize: 14,
-  },
-});

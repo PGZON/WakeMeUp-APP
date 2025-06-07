@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform } from 'react-native';
 import { Bell, Clock, X, ZapOff } from 'lucide-react-native';
-import { colors } from '@/constants/Colors';
+import { colors } from '@/constants/colors';
 import { dimensions } from '@/constants/dimensions';
 import * as Haptics from 'expo-haptics';
 
