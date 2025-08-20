@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs } from "expo-router";
 import { useColorScheme } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import Colors from "@/constants/colors";
+import { getTrips } from "@/utils/api";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
+
+  const [trips, setTrips] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const tripsData = await getTrips();
+        setTrips(tripsData);
+      } catch (error) {
+        console.error("Failed to fetch trips:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Tabs

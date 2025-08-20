@@ -33,7 +33,8 @@
         {
           "origin": "http://localhost/"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
