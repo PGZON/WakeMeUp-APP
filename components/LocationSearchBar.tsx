@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
 import { Search, MapPin, X } from 'lucide-react-native';
-import { colors } from '@/constants/colors';
+import { colors } from '@/constants/Colors';
 import { dimensions } from '@/constants/dimensions';
 import { Location } from '@/types/location';
 

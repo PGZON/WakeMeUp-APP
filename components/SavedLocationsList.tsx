@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { MapPin, Star, StarOff, Trash2 } from 'lucide-react-native';
-import { colors } from '@/constants/colors';
+import { colors } from '@/constants/Colors';
 import { dimensions } from '@/constants/dimensions';
 import { Location } from '@/types/location';
 

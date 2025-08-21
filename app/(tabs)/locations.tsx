@@ -5,7 +5,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useLocationStore } from '@/hooks/useLocationStore';
 import { SavedLocationsList } from '@/components/SavedLocationsList';
 import { Location } from '@/types/location';
-import { colors } from '@/constants/colors';
+import { colors } from '@/constants/Colors';
 
 export default function LocationsScreen() {
   const router = useRouter();

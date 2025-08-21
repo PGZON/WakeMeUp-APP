@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { MapPin, Clock, Settings, Home } from "lucide-react-native";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { dimensions } from "@/constants/dimensions";
 
 export default function TabLayout() {

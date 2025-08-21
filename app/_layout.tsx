@@ -10,6 +10,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { trpc, trpcClient } from "@/lib/trpc";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { BackendProvider } from "../context/BackendContext";
 import * as Location from "expo-location";
 
 export const unstable_settings = {
@@ -64,11 +65,13 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <SafeAreaProvider>
-              <RootLayoutNav 
-                locationPermission={locationPermission}
-              />
-            </SafeAreaProvider>
+            <BackendProvider>
+              <SafeAreaProvider>
+                <RootLayoutNav 
+                  locationPermission={locationPermission}
+                />
+              </SafeAreaProvider>
+            </BackendProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </trpc.Provider>

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { Bell, Vibrate, Volume2, MapPin, Clock, Trash2, Info, HelpCircle } from 'lucide-react-native';
 import { useLocationStore } from '@/hooks/useLocationStore';
-import { colors } from '@/constants/colors';
+import { colors } from '@/constants/Colors';
 import { dimensions } from '@/constants/dimensions';
 
 export default function SettingsScreen() {
